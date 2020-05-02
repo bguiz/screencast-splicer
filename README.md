@@ -16,6 +16,88 @@ npx screencast-splicer instructions.json screencast.mp4
 
 ```
 
+### Input
+
+An example JSON file for `instructions.json`:
+
+```json
+{
+  "events": [
+    {
+      "sourceClip": "one.mp4",
+      "sourceStart": "00:00:00.0000",
+      "sourceDuration": "00:00:07.5000"
+    },
+    {
+      "sourceClip": "one.mp4",
+      "sourceStart": "00:00:05.0000",
+      "sourceDuration": "00:00:07.5000"
+    },
+    {
+      "sourceClip": "two.mp4",
+      "sourceStart": "00:00:18.0000",
+      "sourceDuration": "00:00:12.5000"
+    },
+    {
+      "sourceClip": "one.mp4",
+      "sourceStart": "00:00:10.0000",
+      "sourceDuration": "00:00:07.5000"
+    },
+    {
+      "sourceClip": "one.mp4",
+      "sourceStart": "00:00:15.0000",
+      "sourceDuration": "00:00:12.5000"
+    }
+  ]
+}
+
+```
+
+This assumes that you have `one.mp4` and `two.mp4` in your current directory.
+
+### Output
+
+This will generate a file named `screencast-output-ffmpeg.tmp.sh`
+in your current directory,
+which should contain something similar to:
+
+```shell
+#!/bin/sh
+
+# slice pieces
+ffmpeg -i "one.mp4" -ss "00:00:00.0000" -t "00:00:07.5000" -c copy "screencast-output.01.tmp.mp4"
+ffmpeg -i "one.mp4" -ss "00:00:05.0000" -t "00:00:07.5000" -c copy "screencast-output.02.tmp.mp4"
+ffmpeg -i "two.mp4" -ss "00:00:18.0000" -t "00:00:12.5000" -c copy "screencast-output.03.tmp.mp4"
+ffmpeg -i "one.mp4" -ss "00:00:10.0000" -t "00:00:07.5000" -c copy "screencast-output.04.tmp.mp4"
+ffmpeg -i "one.mp4" -ss "00:00:15.0000" -t "00:00:12.5000" -c copy "screencast-output.05.tmp.mp4"
+
+# concatenate pieces
+ffmpeg -f concat -safe 0 \
+ -i screencast-output-ffmpeg-concat.tmp.txt \
+ -c copy ./screencast-output.mp4
+
+# clean up
+rm "screencast-output.01.tmp.mp4"
+rm "screencast-output.02.tmp.mp4"
+rm "screencast-output.03.tmp.mp4"
+rm "screencast-output.04.tmp.mp4"
+rm "screencast-output.05.tmp.mp4"
+rm "screencast-output-ffmpeg-concat.tmp.txt"
+rm "screencast-output-ffmpeg.tmp.sh"
+
+```
+
+Run this file:
+
+```shell
+./screencast-output-ffmpeg.tmp.sh
+
+```
+
+Which will run various `ffmpeg` commands,
+and then clean up after itself
+including deleting all the intermediate video clip files.
+
 ## Caveats
 
 - There is an issue with `ffmpeg` in which
