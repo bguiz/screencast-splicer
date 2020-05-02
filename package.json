@@ -2,9 +2,12 @@
   "name": "screencast-splicer",
   "version": "0.0.0",
   "description": "Cuts several recorded videos into pieces and joined them together again. Intended for use in screencasts.",
-  "main": "index.js",
+  "main": "screencast-splicer.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "screencast-splicer": "./screencast-splicer-bin.js"
   },
   "repository": {
     "type": "git",
